@@ -1,0 +1,179 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Gramin Bank Design System - Light Mode */
+    --background: 40 40% 97%;
+    --foreground: 162 100% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 162 100% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 162 100% 12%;
+
+    --primary: 162 100% 19%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 41 94% 49%;
+    --secondary-foreground: 162 100% 12%;
+
+    --muted: 40 20% 90%;
+    --muted-foreground: 162 50% 35%;
+
+    --accent: 41 94% 49%;
+    --accent-foreground: 162 100% 12%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 162 30% 85%;
+    --input: 162 30% 85%;
+    --ring: 162 100% 19%;
+
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 162 100% 12%;
+
+    --radius: 0.75rem;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(162 100% 19%), hsl(162 100% 14%));
+    --gradient-accent: linear-gradient(135deg, hsl(41 94% 49%), hsl(41 94% 40%));
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100% / 0.7), hsl(0 0% 100% / 0.9));
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 8px hsl(162 100% 19% / 0.08);
+    --shadow-md: 0 4px 16px hsl(162 100% 19% / 0.12);
+    --shadow-lg: 0 8px 32px hsl(162 100% 19% / 0.16);
+    --shadow-glow: 0 0 24px hsl(41 94% 49% / 0.3);
+
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dark {
+    /* Gramin Bank Design System - Dark Mode */
+    --background: 220 26% 14%;
+    --foreground: 40 40% 97%;
+
+    --card: 220 26% 18%;
+    --card-foreground: 40 40% 97%;
+
+    --popover: 220 26% 18%;
+    --popover-foreground: 40 40% 97%;
+
+    --primary: 162 100% 35%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 41 94% 55%;
+    --secondary-foreground: 220 26% 14%;
+
+    --muted: 220 26% 25%;
+    --muted-foreground: 40 20% 70%;
+
+    --accent: 41 94% 55%;
+    --accent-foreground: 220 26% 14%;
+
+    --destructive: 0 62.8% 50.6%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 26% 25%;
+    --input: 220 26% 25%;
+    --ring: 162 100% 35%;
+
+    --success: 142 76% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 55%;
+    --warning-foreground: 220 26% 14%;
+
+    /* Gradients - Dark */
+    --gradient-primary: linear-gradient(135deg, hsl(162 100% 35%), hsl(162 100% 25%));
+    --gradient-accent: linear-gradient(135deg, hsl(41 94% 55%), hsl(41 94% 45%));
+    --gradient-card: linear-gradient(135deg, hsl(220 26% 18% / 0.7), hsl(220 26% 18% / 0.9));
+    
+    /* Shadows - Dark */
+    --shadow-sm: 0 2px 8px hsl(0 0% 0% / 0.3);
+    --shadow-md: 0 4px 16px hsl(0 0% 0% / 0.4);
+    --shadow-lg: 0 8px 32px hsl(0 0% 0% / 0.5);
+    --shadow-glow: 0 0 24px hsl(41 94% 55% / 0.4);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  /* Glass card effect */
+  .glass-card {
+    @apply backdrop-blur-xl bg-card/80 border border-border/50;
+    box-shadow: var(--shadow-md);
+  }
+
+  /* Hover scale animation */
+  .hover-scale {
+    @apply transition-transform duration-300 hover:scale-105;
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent;
+  }
+
+  /* Pulse animation for voice */
+  .pulse-ring {
+    @apply animate-pulse;
+  }
+}
+
+@layer utilities {
+  /* Custom animations */
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.4s ease-out;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+  }
+}
