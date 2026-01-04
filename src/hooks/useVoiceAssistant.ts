@@ -291,6 +291,51 @@ export const useVoiceAssistant = (language: 'en' | 'hi' | 'kn') => {
       try {
         // cancel any speaking in progress and navigate
         window.speechSynthesis && window.speechSynthesis.cancel && window.speechSynthesis.cancel();
+        
+        // Parse amount for withdraw and deposit
+        if (route.path === '/withdraw' || route.path === '/deposit') {
+          const amountMatch = command.match(/(\d{1,3}(?:[,\s\d]*\d)?(?:[\.\,]\d+)?)(?=\s*(?:rupees|rs|₹|dollar|usd)?)/i);
+          if (amountMatch) {
+            const a = amountMatch[1].replace(/[,\s]/g, '').replace(',', '.');
+            const parsed = parseFloat(a);
+            if (!isNaN(parsed)) {
+              const eventName = route.path === '/withdraw' ? 'voice-withdraw' : 'voice-deposit';
+              try {
+                const ev = new CustomEvent(eventName, { detail: { amount: parsed } });
+                window.dispatchEvent(ev);
+              } catch (e) { console.warn(`could not dispatch ${eventName} event`, e); }
+            }
+          }
+        }
+        
+        // Parse cheque details
+        if (route.path === '/cheque') {
+          const parsed: { payeeName?: string; amount?: number; chequeNumber?: string } = {};
+          
+          // amount
+          const amountMatch = command.match(/(\d{1,3}(?:[,\s\d]*\d)?(?:[\.\,]\d+)?)(?=\s*(?:rupees|rs|₹)?)/i);
+          if (amountMatch) {
+            const a = amountMatch[1].replace(/[,\s]/g, '').replace(',', '.');
+            const am = parseFloat(a);
+            if (!isNaN(am)) parsed.amount = am;
+          }
+          
+          // cheque number
+          const chequeMatch = command.match(/(?:cheque|check)\s+(?:no|number|no\.)?[\s#]?(\d{6,})/i);
+          if (chequeMatch) parsed.chequeNumber = chequeMatch[1];
+          
+          // payee name
+          const payeeMatch = command.match(/(?:to|for|payee)\s+([\p{L}\s.'-]{2,100})(?=\s*(?:amount|rupees|cheque|\d|$))/iu);
+          if (payeeMatch) parsed.payeeName = payeeMatch[1].trim();
+          
+          if (Object.keys(parsed).length > 0) {
+            try {
+              const ev = new CustomEvent('voice-cheque', { detail: parsed });
+              window.dispatchEvent(ev);
+            } catch (e) { console.warn('could not dispatch voice-cheque event', e); }
+          }
+        }
+        
         // special-case: if this is the send-money route, attempt to parse details and emit an event
         if (route.path === '/send-money') {
           const parsed = parseSendCommand(command);
@@ -300,6 +345,7 @@ export const useVoiceAssistant = (language: 'en' | 'hi' | 'kn') => {
             window.dispatchEvent(ev);
           } catch (e) { console.warn('could not dispatch voice-send-money event', e); }
         }
+        
         navigate(route.path);
         // choose message and TTS language carefully for Kannada
         let msgToSpeak = route.message[language] || route.message.en || 'Opening';

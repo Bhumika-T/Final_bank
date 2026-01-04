@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { VoiceAssistant } from "@/components/VoiceAssistant";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,6 +19,15 @@ const Deposit = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const language = useLanguage();
+
+  useEffect(() => {
+    const handler = (e: any) => {
+      const d = e.detail || {};
+      if (typeof d.amount === 'number') setAmount(String(d.amount));
+    };
+    window.addEventListener('voice-deposit', handler as EventListener);
+    return () => window.removeEventListener('voice-deposit', handler as EventListener);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
