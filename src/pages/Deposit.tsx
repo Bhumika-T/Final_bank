@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/hooks/useLanguage";
 import { Download } from "lucide-react";
+import { ensureAccountExists } from "@/lib/accountUtils";
 
 const Deposit = () => {
   const [amount, setAmount] = useState("");
@@ -28,23 +29,23 @@ const Deposit = () => {
       if (!user) {
         toast.error(t('pleaseLogin'));
         navigate('/auth');
+        setLoading(false);
         return;
       }
 
       const parsedAmount = parseFloat(amount);
       if (isNaN(parsedAmount) || parsedAmount <= 0) {
         toast.error(t('invalidAmount'));
+        setLoading(false);
         return;
       }
 
-      const { data: accounts } = await supabase
-        .from('accounts')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
+      // Get user's account (create if doesn't exist)
+      const accounts = await ensureAccountExists(user.id);
 
       if (!accounts) {
         toast.error('Account not found');
+        setLoading(false);
         return;
       }
 
@@ -66,7 +67,8 @@ const Deposit = () => {
       setAmount("");
       navigate('/');
     } catch (error: any) {
-      toast.error(error.message);
+      console.error('Deposit error:', error);
+      toast.error(error.message || 'Deposit failed');
     } finally {
       setLoading(false);
     }

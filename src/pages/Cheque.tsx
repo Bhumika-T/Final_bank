@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/hooks/useLanguage";
 import { FileText } from "lucide-react";
+import { ensureAccountExists } from "@/lib/accountUtils";
 
 const Cheque = () => {
   const [payeeName, setPayeeName] = useState("");
@@ -40,11 +41,7 @@ const Cheque = () => {
         return;
       }
 
-      const { data: accounts } = await supabase
-        .from('accounts')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
+      const accounts = await ensureAccountExists(user.id);
 
       if (!accounts) {
         toast.error('Account not found');

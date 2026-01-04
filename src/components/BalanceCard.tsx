@@ -4,6 +4,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
+import { ensureAccountExists } from "@/lib/accountUtils";
 
 export const BalanceCard = () => {
   const [isBalanceVisible, setIsBalanceVisible] = useState(false);
@@ -18,11 +19,7 @@ export const BalanceCard = () => {
   const fetchAccountData = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      const { data } = await supabase
-        .from('accounts')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
+      const data = await ensureAccountExists(user.id);
       
       if (data) {
         setBalance(Number(data.balance));

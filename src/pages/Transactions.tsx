@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/hooks/useLanguage";
 import { ArrowDownLeft, ArrowUpRight, CreditCard } from "lucide-react";
+import { ensureAccountExists } from "@/lib/accountUtils";
 
 const Transactions = () => {
   const [transactions, setTransactions] = useState<any[]>([]);
@@ -46,11 +47,7 @@ const Transactions = () => {
       return;
     }
 
-    const { data: accounts } = await supabase
-      .from('accounts')
-      .select('id')
-      .eq('user_id', user.id)
-      .single();
+    const accounts = await ensureAccountExists(user.id);
 
     if (accounts) {
       const { data } = await supabase

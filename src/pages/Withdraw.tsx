@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/hooks/useLanguage";
 import { Upload } from "lucide-react";
+import { ensureAccountExists } from "@/lib/accountUtils";
 
 const Withdraw = () => {
   const [amount, setAmount] = useState("");
@@ -37,11 +38,8 @@ const Withdraw = () => {
         return;
       }
 
-      const { data: accounts } = await supabase
-        .from('accounts')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
+      // Get user's account (create if doesn't exist)
+      const accounts = await ensureAccountExists(user.id);
 
       if (!accounts) {
         toast.error('Account not found');

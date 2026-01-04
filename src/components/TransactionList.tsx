@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
+import { ensureAccountExists } from "@/lib/accountUtils";
 
 export const TransactionList = () => {
   const [transactions, setTransactions] = useState<any[]>([]);
@@ -16,7 +17,7 @@ export const TransactionList = () => {
   const fetchTransactions = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      const { data: accounts } = await supabase.from('accounts').select('id').eq('user_id', user.id).single();
+      const accounts = await ensureAccountExists(user.id);
       if (accounts) {
         const { data } = await supabase.from('transactions').select('*').eq('account_id', accounts.id).order('created_at', { ascending: false }).limit(3);
         setTransactions(data || []);

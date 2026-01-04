@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/hooks/useLanguage";
 import { Send } from "lucide-react";
+import { ensureAccountExists } from "@/lib/accountUtils";
 
 const SendMoney = () => {
   const [recipientName, setRecipientName] = useState("");
@@ -60,12 +61,8 @@ const SendMoney = () => {
         return;
       }
 
-      // Get user's account
-      const { data: accounts } = await supabase
-        .from('accounts')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
+      // Get user's account (create if doesn't exist)
+      const accounts = await ensureAccountExists(user.id);
 
       if (!accounts) {
         toast.error('Account not found');
@@ -114,11 +111,8 @@ const SendMoney = () => {
 
       const parsedAmount = pendingTransfer.parsedAmount;
 
-      const { data: accounts } = await supabase
-        .from('accounts')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
+      // Get user's account (create if doesn't exist)
+      const accounts = await ensureAccountExists(user.id);
 
       if (!accounts) {
         toast.error('Account not found');
